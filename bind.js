@@ -65,12 +65,14 @@ handle_message = function(message) {
     _ref = JSON.parse(message), msg_id = _ref[0], value = 2 <= _ref.length ? __slice.call(_ref, 1) : [];
     task = call[msg_id];
     if (task != null) {
-      if (task.ready != null) {
-        task.callback(value);
-      }
+      console.log('task', task);
       if ((_ref1 = task.message[2]) === 'bind' || _ref1 === 'listen') {
+        if (task.ready != null) {
+          task.callback.apply(task, value);
+        }
         return task.ready = true;
       } else {
+        task.callback.apply(task, value);
         return delete call[msg_id];
       }
     } else {
@@ -78,6 +80,34 @@ handle_message = function(message) {
     }
   }
 };
+
+exports.api = function() {
+  var args, callback, method, _i;
+  method = arguments[0], args = 3 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), callback = arguments[_i++];
+  return exports.send.apply(exports, [null, method].concat(__slice.call(args), [callback]));
+};
+
+["bind", "unbind", "listen", "unlisten", "relaunch_config", "clipboard_contents", "focused_window", "visible_windows", "all_windows", "main_screen", "all_screens", "running_apps", "alert", "log", "show_box", "hide_box", "choose_from", "update_settings", "undo", "redo"].map(function(method) {
+  return exports[method] = function() {
+    var args, callback, _i;
+    args = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), callback = arguments[_i++];
+    return exports.api.apply(exports, [method].concat(__slice.call(args), [callback]));
+  };
+});
+
+["window_created", "window_minimized", "window_unminimized", "window_moved", "window_resized", "app_launched", "focus_changed", "app_died", "app_hidden", "app_shown", "screens_changed", "mouse_moved", "modifiers_changed"].map(function(method) {
+  return exports[method] = function() {
+    var args, callback, _i;
+    args = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), callback = arguments[_i++];
+    return exports.listen.apply(exports, [method].concat(__slice.call(args), [callback]));
+  };
+});
+
+["title", "set_frame", "set_top_left", "set_size", "frame", "top_left", "size", "maximize", "minimize", "un_minimize", "app", "screen", "focus_window", "focus_window_left", "focus_window_right", "focus_window_up", "focus_window_down", "windows_to_north", "windows_to_south", "windows_to_east", "windows_to_west", "normal_window?", "minimized?", "other_windows_on_same_screen", "other_windows_on_all_screens"].map(function(method) {});
+
+["visible_windows", "all_windows", "title", "hidden?", "show", "hide", "kill", "kill9"].map(function(method) {});
+
+["frame_including_dock_and_menu", "frame_without_dock_or_menu", "previous_screen", "next_screen", "rotate_to"].map(function(method) {});
 
 /*
 //@ sourceMappingURL=bind.map
