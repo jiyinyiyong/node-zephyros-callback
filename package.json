@@ -17,5 +17,8 @@
   "license": "BSD",
   "bugs": {
     "url": "https://github.com/jiyinyiyong/node-zephyros-callback/issues"
+  },
+  "devDependencies": {
+    "proto-task-wait-done": "0.0.1"
   }
 }
