@@ -1,0 +1,21 @@
+{
+  "name": "node-zephyros-callback",
+  "version": "0.0.1",
+  "description": "Zephyros Node binding, but simplified",
+  "main": "bind.js",
+  "scripts": {
+    "test": "node-dev test.coffee"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:jiyinyiyong/node-zephyros-callback.git"
+  },
+  "keywords": [
+    "Zephyros"
+  ],
+  "author": "jiyinyiyong",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/jiyinyiyong/node-zephyros-callback/issues"
+  }
+}
