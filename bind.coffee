@@ -31,7 +31,7 @@ exports.init = (options, onconnect) ->
 
   client.on 'data', (message) ->
     message = message.toString()
-    # console.log (typeof message), message
+    console.log message
     if message.indexOf('\n') >= 0
       message.split('\n').map handle_message
     else
@@ -42,7 +42,7 @@ handle_message = (message) ->
     [msg_id, value...] = JSON.parse message
     task = call[msg_id]
     if task?
-      console.log 'task', task
+      # console.log 'value:', value, task
       if task.message[2] in ['bind', 'listen']
         task.callback value... if task.ready?
         task.ready = yes

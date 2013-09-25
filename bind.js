@@ -51,6 +51,7 @@ exports.init = function(options, onconnect) {
   };
   return client.on('data', function(message) {
     message = message.toString();
+    console.log(message);
     if (message.indexOf('\n') >= 0) {
       return message.split('\n').map(handle_message);
     } else {
@@ -65,7 +66,6 @@ handle_message = function(message) {
     _ref = JSON.parse(message), msg_id = _ref[0], value = 2 <= _ref.length ? __slice.call(_ref, 1) : [];
     task = call[msg_id];
     if (task != null) {
-      console.log('task', task);
       if ((_ref1 = task.message[2]) === 'bind' || _ref1 === 'listen') {
         if (task.ready != null) {
           task.callback.apply(task, value);

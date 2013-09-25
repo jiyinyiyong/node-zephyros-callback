@@ -27,4 +27,24 @@ z.init port: 1235, ->
     console.log 'cmd alt e'
 
   z.bind 'l', ['cmd', 'alt'], ->
-    console.log 'l'
+    # console.log '...'
+    sizing = task.new()
+
+    sizing.wait 'window_id'
+    z.focused_window (window_id) ->
+      # console.log 'window_id', window_id
+      sizing.done 'window_id', window_id
+
+    sizing.wait 'screen_size'
+    z.main_screen (screen_id) ->
+      z.send screen_id, 'frame_without_dock_or_menu', (frame) ->
+        sizing.done 'screen_size', frame
+
+    sizing.task = ->
+      console.log @data
+      frame =
+        x: 0
+        y: 0
+        w: Math.round (@data.screen_size.w / 2)
+        h: Math.round (@data.screen_size.h)
+      z.send @data.window_id, 'set_frame', frame, ->
