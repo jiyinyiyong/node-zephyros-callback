@@ -83,11 +83,17 @@ exports.api = (method, args..., callback) ->
   "normal_window?", "minimized?"
   "other_windows_on_same_screen", "other_windows_on_all_screens"
 ].map (method) ->
+  exports[method] = (window_id, args..., callback) ->
+    exports.send window_id, args..., callback
 
 [ "visible_windows", "all_windows", "title"
   "hidden?", "show", "hide", "kill", "kill9"
 ].map (method) ->
+  exports[method] = (app_id, args..., callback) ->
+    exports.send app_id, args..., callback
 
 [ "frame_including_dock_and_menu", "frame_without_dock_or_menu"
   "previous_screen", "next_screen", "rotate_to"
 ].map (method) ->
+  exports[method] = (screen_id, args..., callback) ->
+    exports.send screen_id, args..., callback
