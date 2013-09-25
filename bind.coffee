@@ -31,7 +31,7 @@ exports.init = (options, onconnect) ->
 
   client.on 'data', (message) ->
     message = message.toString()
-    console.log message
+    # console.log message
     if message.indexOf('\n') >= 0
       message.split('\n').map handle_message
     else
@@ -54,7 +54,7 @@ handle_message = (message) ->
       console.log 'no callback for', message.toString(), call
 
 exports.api = (method, args..., callback) ->
-  console.log 'api send:', method, args...
+  # console.log 'api send:', method, args...
   exports.send null, method, args..., callback
 
 [ "bind", "unbind", "listen", "unlisten"
@@ -65,7 +65,7 @@ exports.api = (method, args..., callback) ->
   "choose_from", "update_settings", "undo", "redo"
 ].map (method) ->
   exports[method] = (args..., callback) ->
-    console.log 'null method..', method, args
+    # console.log 'null method..', method, args
     exports.api method, args..., callback
 
 [ "window_created", "window_minimized", "window_unminimized"
@@ -75,30 +75,3 @@ exports.api = (method, args..., callback) ->
 ].map (method) ->
   exports[method] = (args..., callback) ->
     exports.listen method, args..., callback
-
-exports.window = {}
-[ "title", "set_frame", "set_top_left", "set_size", "frame", "top_left", "size"
-  "maximize", "minimize", "un_minimize"
-  "app", "screen"
-  "focus_window"
-  "focus_window_left", "focus_window_right", "focus_window_up", "focus_window_down"
-  "windows_to_north", "windows_to_south", "windows_to_east", "windows_to_west"
-  "normal_window?", "minimized?"
-  "other_windows_on_same_screen", "other_windows_on_all_screens"
-].map (method) ->
-  exports.window[method] = (window_id, args..., callback) ->
-    exports.send window_id, args..., callback
-
-exports.app = {}
-[ "visible_windows", "all_windows", "title"
-  "hidden?", "show", "hide", "kill", "kill9"
-].map (method) ->
-  exports.app[method] = (app_id, args..., callback) ->
-    exports.send app_id, args..., callback
-
-exports.screen = {}
-[ "frame_including_dock_and_menu", "frame_without_dock_or_menu"
-  "previous_screen", "next_screen", "rotate_to"
-].map (method) ->
-  exports.screen[method] = (screen_id, args..., callback) ->
-    exports.send screen_id, args..., callback
