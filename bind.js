@@ -72,7 +72,9 @@ handle_message = function(message) {
         }
         return task.ready = true;
       } else {
-        task.callback.apply(task, value);
+        if (typeof task.callback === "function") {
+          task.callback.apply(task, value);
+        }
         return delete call[msg_id];
       }
     } else {
@@ -84,6 +86,7 @@ handle_message = function(message) {
 exports.api = function() {
   var args, callback, method, _i;
   method = arguments[0], args = 3 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), callback = arguments[_i++];
+  console.log.apply(console, ['api send:', method].concat(__slice.call(args)));
   return exports.send.apply(exports, [null, method].concat(__slice.call(args), [callback]));
 };
 
@@ -91,6 +94,7 @@ exports.api = function() {
   return exports[method] = function() {
     var args, callback, _i;
     args = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), callback = arguments[_i++];
+    console.log('null method..', method, args);
     return exports.api.apply(exports, [method].concat(__slice.call(args), [callback]));
   };
 });
@@ -103,11 +107,35 @@ exports.api = function() {
   };
 });
 
-["title", "set_frame", "set_top_left", "set_size", "frame", "top_left", "size", "maximize", "minimize", "un_minimize", "app", "screen", "focus_window", "focus_window_left", "focus_window_right", "focus_window_up", "focus_window_down", "windows_to_north", "windows_to_south", "windows_to_east", "windows_to_west", "normal_window?", "minimized?", "other_windows_on_same_screen", "other_windows_on_all_screens"].map(function(method) {});
+exports.window = {};
 
-["visible_windows", "all_windows", "title", "hidden?", "show", "hide", "kill", "kill9"].map(function(method) {});
+["title", "set_frame", "set_top_left", "set_size", "frame", "top_left", "size", "maximize", "minimize", "un_minimize", "app", "screen", "focus_window", "focus_window_left", "focus_window_right", "focus_window_up", "focus_window_down", "windows_to_north", "windows_to_south", "windows_to_east", "windows_to_west", "normal_window?", "minimized?", "other_windows_on_same_screen", "other_windows_on_all_screens"].map(function(method) {
+  return exports.window[method] = function() {
+    var args, callback, window_id, _i;
+    window_id = arguments[0], args = 3 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), callback = arguments[_i++];
+    return exports.send.apply(exports, [window_id].concat(__slice.call(args), [callback]));
+  };
+});
 
-["frame_including_dock_and_menu", "frame_without_dock_or_menu", "previous_screen", "next_screen", "rotate_to"].map(function(method) {});
+exports.app = {};
+
+["visible_windows", "all_windows", "title", "hidden?", "show", "hide", "kill", "kill9"].map(function(method) {
+  return exports.app[method] = function() {
+    var app_id, args, callback, _i;
+    app_id = arguments[0], args = 3 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), callback = arguments[_i++];
+    return exports.send.apply(exports, [app_id].concat(__slice.call(args), [callback]));
+  };
+});
+
+exports.screen = {};
+
+["frame_including_dock_and_menu", "frame_without_dock_or_menu", "previous_screen", "next_screen", "rotate_to"].map(function(method) {
+  return exports.screen[method] = function() {
+    var args, callback, screen_id, _i;
+    screen_id = arguments[0], args = 3 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), callback = arguments[_i++];
+    return exports.send.apply(exports, [screen_id].concat(__slice.call(args), [callback]));
+  };
+});
 
 /*
 //@ sourceMappingURL=bind.map

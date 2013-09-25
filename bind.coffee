@@ -47,13 +47,14 @@ handle_message = (message) ->
         task.callback value... if task.ready?
         task.ready = yes
       else
-        task.callback value...
+        task.callback? value...
         delete call[msg_id]
         # so 'bind' and 'listen' will be not be cleared
     else
       console.log 'no callback for', message.toString(), call
 
 exports.api = (method, args..., callback) ->
+  console.log 'api send:', method, args...
   exports.send null, method, args..., callback
 
 [ "bind", "unbind", "listen", "unlisten"
@@ -64,6 +65,7 @@ exports.api = (method, args..., callback) ->
   "choose_from", "update_settings", "undo", "redo"
 ].map (method) ->
   exports[method] = (args..., callback) ->
+    console.log 'null method..', method, args
     exports.api method, args..., callback
 
 [ "window_created", "window_minimized", "window_unminimized"
@@ -74,6 +76,7 @@ exports.api = (method, args..., callback) ->
   exports[method] = (args..., callback) ->
     exports.listen method, args..., callback
 
+exports.window = {}
 [ "title", "set_frame", "set_top_left", "set_size", "frame", "top_left", "size"
   "maximize", "minimize", "un_minimize"
   "app", "screen"
@@ -83,17 +86,19 @@ exports.api = (method, args..., callback) ->
   "normal_window?", "minimized?"
   "other_windows_on_same_screen", "other_windows_on_all_screens"
 ].map (method) ->
-  exports[method] = (window_id, args..., callback) ->
+  exports.window[method] = (window_id, args..., callback) ->
     exports.send window_id, args..., callback
 
+exports.app = {}
 [ "visible_windows", "all_windows", "title"
   "hidden?", "show", "hide", "kill", "kill9"
 ].map (method) ->
-  exports[method] = (app_id, args..., callback) ->
+  exports.app[method] = (app_id, args..., callback) ->
     exports.send app_id, args..., callback
 
+exports.screen = {}
 [ "frame_including_dock_and_menu", "frame_without_dock_or_menu"
   "previous_screen", "next_screen", "rotate_to"
 ].map (method) ->
-  exports[method] = (screen_id, args..., callback) ->
+  exports.screen[method] = (screen_id, args..., callback) ->
     exports.send screen_id, args..., callback
