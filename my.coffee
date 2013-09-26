@@ -28,7 +28,12 @@ divide_x = (key, x, y, w, h) ->
 z.connect port: 1235, ->
   do_in_screen (rect) ->
     {w, w2, w3, w4, h, h1} = rect
+
+    # windows of different widths, left to right
     divide_x 'h', 0, 0, w3, h
     divide_x 'j', 0, 0, w4, h
     divide_x 'k', w2, 0, w4, h
     divide_x 'l', w3, 0, w3, h
+
+    # maximize a window
+    divide_x 'i', 0, 0, w, h
