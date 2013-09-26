@@ -5,7 +5,7 @@ var call, delay, handle_message, id, net, str, unit,
 net = require('net');
 
 unit = function(x) {
-  return x + '\r\n';
+  return x + '\n';
 };
 
 str = function(x) {
@@ -33,12 +33,15 @@ id = {
 
 call = [];
 
-exports.init = function(options, onconnect) {
+exports.connect = function(options, onconnect) {
   var client;
   client = net.connect(options, onconnect);
   exports.send = function() {
     var args, callback, message, method, msg_id, receiver_id, _i, _ref;
     receiver_id = arguments[0], method = arguments[1], args = 4 <= arguments.length ? __slice.call(arguments, 2, _i = arguments.length - 1) : (_i = 2, []), callback = arguments[_i++];
+    if ((typeof callback) !== 'function') {
+      args.push(callback);
+    }
     msg_id = id.make();
     message = [msg_id, receiver_id, method].concat(__slice.call(args));
     client.write(unit(str(message)));
@@ -51,7 +54,6 @@ exports.init = function(options, onconnect) {
   };
   return client.on('data', function(message) {
     message = message.toString();
-    console.log(message);
     if (message.indexOf('\n') >= 0) {
       return message.split('\n').map(handle_message);
     } else {
@@ -83,19 +85,14 @@ handle_message = function(message) {
   }
 };
 
-exports.api = function() {
-  var args, callback, method, _i;
-  method = arguments[0], args = 3 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), callback = arguments[_i++];
-  console.log.apply(console, ['api send:', method].concat(__slice.call(args)));
-  return exports.send.apply(exports, [null, method].concat(__slice.call(args), [callback]));
-};
-
 ["bind", "unbind", "listen", "unlisten", "relaunch_config", "clipboard_contents", "focused_window", "visible_windows", "all_windows", "main_screen", "all_screens", "running_apps", "alert", "log", "show_box", "hide_box", "choose_from", "update_settings", "undo", "redo"].map(function(method) {
   return exports[method] = function() {
     var args, callback, _i;
     args = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), callback = arguments[_i++];
-    console.log('null method..', method, args);
-    return exports.api.apply(exports, [method].concat(__slice.call(args), [callback]));
+    if ((typeof callback) !== 'function') {
+      args.push(callback);
+    }
+    return exports.send.apply(exports, [null, method].concat(__slice.call(args), [callback]));
   };
 });
 
@@ -103,37 +100,10 @@ exports.api = function() {
   return exports[method] = function() {
     var args, callback, _i;
     args = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), callback = arguments[_i++];
+    if ((typeof callback) !== 'function') {
+      args.push(callback);
+    }
     return exports.listen.apply(exports, [method].concat(__slice.call(args), [callback]));
-  };
-});
-
-exports.window = {};
-
-["title", "set_frame", "set_top_left", "set_size", "frame", "top_left", "size", "maximize", "minimize", "un_minimize", "app", "screen", "focus_window", "focus_window_left", "focus_window_right", "focus_window_up", "focus_window_down", "windows_to_north", "windows_to_south", "windows_to_east", "windows_to_west", "normal_window?", "minimized?", "other_windows_on_same_screen", "other_windows_on_all_screens"].map(function(method) {
-  return exports.window[method] = function() {
-    var args, callback, window_id, _i;
-    window_id = arguments[0], args = 3 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), callback = arguments[_i++];
-    return exports.send.apply(exports, [window_id].concat(__slice.call(args), [callback]));
-  };
-});
-
-exports.app = {};
-
-["visible_windows", "all_windows", "title", "hidden?", "show", "hide", "kill", "kill9"].map(function(method) {
-  return exports.app[method] = function() {
-    var app_id, args, callback, _i;
-    app_id = arguments[0], args = 3 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), callback = arguments[_i++];
-    return exports.send.apply(exports, [app_id].concat(__slice.call(args), [callback]));
-  };
-});
-
-exports.screen = {};
-
-["frame_including_dock_and_menu", "frame_without_dock_or_menu", "previous_screen", "next_screen", "rotate_to"].map(function(method) {
-  return exports.screen[method] = function() {
-    var args, callback, screen_id, _i;
-    screen_id = arguments[0], args = 3 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), callback = arguments[_i++];
-    return exports.send.apply(exports, [screen_id].concat(__slice.call(args), [callback]));
   };
 });
 
