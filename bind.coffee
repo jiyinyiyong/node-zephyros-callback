@@ -1,7 +1,7 @@
 
 net = require 'net'
 
-unit = (x) -> x + '\r\n'
+unit = (x) -> x + '\n'
 str = (x) ->
   switch typeof x
     when 'object' then JSON.stringify x
@@ -17,11 +17,12 @@ id =
 
 call = []
 
-exports.init = (options, onconnect) ->
+exports.connect = (options, onconnect) ->
 
   client = net.connect options, onconnect
 
   exports.send = (receiver_id, method, args..., callback) ->
+    args.push callback unless (typeof callback) is 'function'
     msg_id = id.make()
     message = [msg_id, receiver_id, method, args...]
     # console.log 'message is', message
@@ -53,10 +54,6 @@ handle_message = (message) ->
     else
       console.log 'no callback for', message.toString(), call
 
-exports.api = (method, args..., callback) ->
-  # console.log 'api send:', method, args...
-  exports.send null, method, args..., callback
-
 [ "bind", "unbind", "listen", "unlisten"
   "relaunch_config", "clipboard_contents"
   "focused_window", "visible_windows", "all_windows"
@@ -66,7 +63,8 @@ exports.api = (method, args..., callback) ->
 ].map (method) ->
   exports[method] = (args..., callback) ->
     # console.log 'null method..', method, args
-    exports.api method, args..., callback
+    args.push callback unless (typeof callback) is 'function'
+    exports.send null, method, args..., callback
 
 [ "window_created", "window_minimized", "window_unminimized"
   "window_moved", "window_resized"
@@ -74,4 +72,5 @@ exports.api = (method, args..., callback) ->
   "screens_changed", "mouse_moved", "modifiers_changed"
 ].map (method) ->
   exports[method] = (args..., callback) ->
+    args.push callback unless (typeof callback) is 'function'
     exports.listen method, args..., callback

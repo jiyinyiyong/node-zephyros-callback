@@ -1,6 +1,6 @@
 {
   "name": "node-zephyros-callback",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Zephyros Node binding, but simplified",
   "main": "bind.js",
   "scripts": {
@@ -17,8 +17,5 @@
   "license": "BSD",
   "bugs": {
     "url": "https://github.com/jiyinyiyong/node-zephyros-callback/issues"
-  },
-  "devDependencies": {
-    "proto-task-wait-done": "0.0.1"
   }
 }

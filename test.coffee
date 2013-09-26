@@ -1,8 +1,7 @@
 
 z = require './bind.coffee'
-{task} = require 'proto-task-wait-done'
 
-z.init port: 1235, ->
+z.connect port: 1235, ->
 
   z.all_windows (windows) ->
     # return
@@ -41,3 +40,6 @@ z.init port: 1235, ->
             w: half_w
             h: frame.h
             ->
+
+  z.window_moved (window_id) ->
+    console.log window_id
