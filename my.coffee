@@ -25,6 +25,15 @@ divide_x = (key, x, y, w, h) ->
       frame = new_frame x, y, w, h
       z.send window_id, 'set_frame', frame
 
+switch_window = ->
+  z.bind 'tab', ["alt"], ->
+    # z.alert "option tab ", 0.3
+    z.focused_window (window_id) ->
+      z.send window_id, "other_windows_on_same_screen", (ids) ->
+        if ids[0]?
+          z.send ids[0], "focus_window", ->
+            # z.alert "end", 0.3
+
 z.connect port: 1235, ->
   do_in_screen (rect) ->
     {w, w2, w3, w4, h, h1} = rect
@@ -37,3 +46,5 @@ z.connect port: 1235, ->
 
     # maximize a window
     divide_x 'i', 0, 0, w, h
+
+  do switch_window
