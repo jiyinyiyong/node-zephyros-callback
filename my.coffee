@@ -41,3 +41,12 @@ z.connect port: 1235, ->
     divide_x 'i', 0, 0, w, h
 
   z.alert "loaded My", 0.3
+
+  z.listen 'window_created', (window_id) ->
+    z.send window_id, 'app', (app_id) ->
+      z.send app_id, 'title', (title) ->
+        if title is 'Sublime Text'
+          do_in_screen (rect) ->
+            {w, w1, w2, w3, w4, w5, h, h1} = rect
+            frame = new_frame w1, 0, w5, h
+            z.send window_id, 'set_frame', frame
