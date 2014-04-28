@@ -32,21 +32,12 @@ z.connect port: 1235, ->
     {w, w1, w2, w3, w4, w5, h, h1} = rect
 
     # windows of different widths, left to right
-    divide_x 'h', 0, 0, w4, h
-    divide_x 'j', 0, 0, w5, h
+    divide_x 'h', 0, 0, w3, h
+    divide_x 'j', 0, 0, w4, h
     divide_x 'k', w1, 0, w5, h
     divide_x 'l', w2, 0, w4, h
 
     # maximize a window
     divide_x 'i', 0, 0, w, h
 
-  z.alert "loaded My", 0.3
-
-  z.listen 'window_created', (window_id) ->
-    z.send window_id, 'app', (app_id) ->
-      z.send app_id, 'title', (title) ->
-        if title is 'Sublime Text'
-          do_in_screen (rect) ->
-            {w, w1, w2, w3, w4, w5, h, h1} = rect
-            frame = new_frame w1, 0, w5, h
-            z.send window_id, 'set_frame', frame
+  z.alert "My configs loaded!", 0.4
